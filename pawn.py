@@ -10,3 +10,21 @@ class Pawn:
     def draw(self, screen):
         x, y = self.position
         screen.blit(self.image, (x * 80, y * 80))
+
+    def get_possible_moves(self):
+        possible_moves = []
+        x, y = self.position
+        if self.color == "white":
+            if y > 0:
+                possible_moves.append((x, y - 1))
+            if y == 6:
+                possible_moves.append((x, y - 2))
+        elif self.color == "black":
+            if y < 7:
+                possible_moves.append((x, y + 1))
+            if y == 1:
+                possible_moves.append((x, y + 2))
+        return possible_moves
+
+
+

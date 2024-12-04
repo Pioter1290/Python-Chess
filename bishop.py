@@ -10,3 +10,4 @@ class Bishop:
     def draw(self, screen):
         x, y = self.position
         screen.blit(self.image, (x * 80, y * 80))
+
