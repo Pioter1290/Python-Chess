@@ -1,6 +1,10 @@
-# main.py
 import pygame
 from pawn import Pawn
+from queen import Queen
+from king import King
+from rook import Rook
+from knight import Knight
+from bishop import Bishop
 
 pygame.init()
 
@@ -15,20 +19,33 @@ black = (0, 0, 0)
 light_brown = (240, 217, 181)
 dark_brown = (181, 136, 99)
 
-# Load and scale the king image
-white_king = pygame.image.load('main/images/white_king.png')
-white_king = pygame.transform.scale(white_king, (block_size, block_size))
 
-pawns = []
 
-# Białe pionki
+
+pieces = []
+
 for col in range(8):
-    pawns.append(Pawn("white", (col, 6), 'main/images/white_pawn.png'))
+    pieces.append(Pawn("white", (col, 6), 'main/images/white_pawn.png'))
 
-# Czarne pionki
 for col in range(8):
-    pawns.append(Pawn("black", (col, 1), 'main/images/black_pawn.png'))
+    pieces.append(Pawn("black", (col, 1), 'main/images/black_pawn.png'))
 
+pieces.append(Queen("balck", (3,0),'main/images/black_queen.png'))
+pieces.append(Queen("white", (4,7),'main/images/white_queen.png'))
+pieces.append(King("white", (3,7),'main/images/white_king.png'))
+pieces.append(King("black", (4,0),'main/images/black_king.png'))
+pieces.append(Rook("black", (0,0),'main/images/black_rook.png'))
+pieces.append(Rook("black", (7,0),'main/images/black_rook.png'))
+pieces.append(Rook("white", (0,7),'main/images/white_rook.png'))
+pieces.append(Rook("white", (7,7),'main/images/white_rook.png'))
+pieces.append(Knight("white", (1,7),'main/images/white_knight.png'))
+pieces.append(Knight("white", (6,7),'main/images/white_knight.png'))
+pieces.append(Knight("black", (1,0),'main/images/black_knight.png'))
+pieces.append(Knight("black", (6,0),'main/images/black_knight.png'))
+pieces.append(Bishop("black", (5,0),'main/images/black_bishop.png'))
+pieces.append(Bishop("black", (2,0),'main/images/black_bishop.png'))
+pieces.append(Bishop("white", (5,7),'main/images/white_bishop.png'))
+pieces.append(Bishop("white", (2,7),'main/images/white_bishop.png'))
 def draw_board():
     for row in range(8):
         for col in range(8):
@@ -37,9 +54,9 @@ def draw_board():
 
     if selected_square is not None:
         row1, col1 = selected_square
-        pygame.draw.rect(screen, black, pygame.Rect(col1 * block_size, row1 * block_size, block_size, block_size), 1)
+        pygame.draw.rect(screen, black, pygame.Rect(col1 * block_size, row1 * block_size, block_size, block_size), 2)
 
-    for pawn in pawns:
+    for pawn in pieces:
         pawn.draw(screen)
 
 def get_square(pos):
