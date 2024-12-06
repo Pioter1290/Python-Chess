@@ -49,6 +49,8 @@ pieces.append(Bishop("black", (2, 0), 'main/images/black_bishop.png'))
 pieces.append(Bishop("white", (5, 7), 'main/images/white_bishop.png'))
 pieces.append(Bishop("white", (2, 7), 'main/images/white_bishop.png'))
 
+# śledzenie czyj jest ruch:
+current_turn = "white"
 
 def draw_board():
     for row in range(8):
@@ -86,7 +88,7 @@ while running:
             if selected_piece is None:
                 selected_square = None
                 for piece in pieces:
-                    if piece.position == (col, row):
+                    if piece.position == (col, row) and piece.color == current_turn:
                         selected_square = (row, col)
                         selected_piece = piece
                         possible_moves = piece.get_possible_moves()
@@ -94,6 +96,10 @@ while running:
             else:
                 if (col, row) in possible_moves:
                     selected_piece.position = (col, row)
+                    if current_turn == "white":
+                        current_turn = "black"
+                    elif current_turn == "black":
+                        current_turn = "white"
                 selected_piece = None
                 selected_square = None
                 possible_moves = []
