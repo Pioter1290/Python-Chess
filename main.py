@@ -20,11 +20,12 @@ possible_moves = []
 
 white = (255, 255, 255)
 black = (0, 0, 0)
-light_brown = (240, 217, 181)
-dark_brown = (181, 136, 99)
 green = (60, 165, 60)
+light_grey = (220, 220, 220)
 
 pieces = []
+removed_white_pieces = []
+removed_black_pieces = []
 
 for col in range(8):
     pieces.append(Pawn("white", (col, 6), 'main/images/white_pawn.png'))
@@ -53,10 +54,13 @@ pieces.append(Bishop("white", (2, 7), 'main/images/white_bishop.png'))
 current_turn = "white"
 
 def draw_board():
+    screen.fill(light_grey)
     for row in range(8):
         for col in range(8):
             color = white if (row + col) % 2 == 0 else green
             pygame.draw.rect(screen, color, pygame.Rect(col * block_size, row * block_size, block_size, block_size))
+    pygame.draw.rect(screen, black, pygame.Rect(0, 0, 8 * block_size, 8 * block_size), 2)
+
 
     if selected_square:
         row, col = selected_square
@@ -67,13 +71,30 @@ def draw_board():
 
     for move in possible_moves:
         x, y = move
-        pygame.draw.circle(screen, (0, 0, 0), (x * block_size + block_size // 2, y * block_size + block_size // 2), 8)
+        if current_turn == "black":
+            pygame.draw.circle(screen, (0, 0, 0), (x * block_size + block_size // 2, y * block_size + block_size // 2), 8)
+        else:
+            pygame.draw.circle(screen, (128, 128, 128), (x * block_size + block_size // 2, y * block_size + block_size // 2), 8)
 
 def get_square(pos):
     x, y = pos
     col = x // block_size
     row = y // block_size
     return row, col
+
+
+def remove_captured_piece(row, col):
+
+    for piece in pieces:
+        if piece.position == (col, row):
+            if piece.color == "white":
+                removed_white_pieces.append(piece)
+            else:
+                removed_black_pieces.append(piece)
+
+            pieces.remove(piece)
+            break
+
 
 running = True
 while running:
@@ -93,11 +114,18 @@ while running:
                         break
             else:
                 if (col, row) in possible_moves:
+
+                    for piece in pieces:
+                        if piece.position == (col, row) and piece.color != current_turn:
+                            remove_captured_piece(row, col)
+                            break
+
                     selected_piece.position = (col, row)
                     if current_turn == "white":
                         current_turn = "black"
                     elif current_turn == "black":
                         current_turn = "white"
+
                 selected_piece = None
                 selected_square = None
                 possible_moves = []
@@ -106,3 +134,4 @@ while running:
     pygame.display.flip()
 
 pygame.quit()
+

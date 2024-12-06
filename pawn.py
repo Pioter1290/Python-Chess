@@ -6,6 +6,7 @@ class Pawn:
         self.position = position
         self.image = pygame.image.load(image_path)
 
+
     def draw(self, screen):
         x, y = self.position
         screen.blit(self.image, (x * 80, y * 80))
