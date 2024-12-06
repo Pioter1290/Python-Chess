@@ -10,42 +10,96 @@ class Queen:
         x, y = self.position
         screen.blit(self.image, (x * 80, y * 80))
 
-    def get_possible_moves(self):
+    def get_possible_moves(self, pieces):
         possible_moves = []
         x, y = self.position
+        def is_occupied(pos):
+            for piece in pieces:
+                if piece.position == pos:
+                    return piece
+            return None
+
         # Ruchy w górę
         for i in range(1, 8 - y):
-            possible_moves.append((x, y + i))
+            new_pos = (x, y + i)
+            piece = is_occupied(new_pos)
+            if piece:
+                if piece.color != self.color:
+                    possible_moves.append(new_pos)
+                break
+            possible_moves.append(new_pos)
 
         # Ruchy w dół
         for i in range(1, y + 1):
-            possible_moves.append((x, y - i))
+            new_pos = (x, y - i)
+            piece = is_occupied(new_pos)
+            if piece:
+                if piece.color != self.color:
+                    possible_moves.append(new_pos)
+                break
+            possible_moves.append(new_pos)
 
         # Ruchy w lewo
         for i in range(1, x + 1):
-            possible_moves.append((x - i, y))
+            new_pos = (x - i, y)
+            piece = is_occupied(new_pos)
+            if piece:
+                if piece.color != self.color:
+                    possible_moves.append(new_pos)
+                break
+            possible_moves.append(new_pos)
 
         # Ruchy w prawo
         for i in range(1, 8 - x):
-            possible_moves.append((x + i, y))
+            new_pos = (x + i, y)
+            piece = is_occupied(new_pos)
+            if piece:
+                if piece.color != self.color:
+                    possible_moves.append(new_pos)
+                break
+            possible_moves.append(new_pos)
+
 
         # Ruchy w górę-lewo (lewa przekątna)
         for i in range(1, min(x, y) + 1):
+            new_pos = (x - i, y - i)
+            piece = is_occupied(new_pos)
+            if piece:
+                if piece.color != self.color:
+                    possible_moves.append(new_pos)
+                break
             possible_moves.append((x - i, y - i))
 
         # Ruchy w górę-prawo (prawa przekątna)
         for i in range(1, min(8 - x, y) + 1):
+            new_pos = (x + i, y - i)
+            piece = is_occupied(new_pos)
+            if piece:
+                if piece.color != self.color:
+                    possible_moves.append(new_pos)
+                break
             possible_moves.append((x + i, y - i))
 
         # Ruchy w dół-lewo (lewa przekątna)
         for i in range(1, min(x, 8 - y) + 1):
+            new_pos = (x - i, y + i)
+            piece = is_occupied(new_pos)
+            if piece:
+                if piece.color != self.color:
+                    possible_moves.append(new_pos)
+                break
             possible_moves.append((x - i, y + i))
 
         # Ruchy w dół-prawo (prawa przekątna)
         for i in range(1, min(8 - x, 8 - y) + 1):
+            new_pos = (x + i, y + i)
+            piece = is_occupied(new_pos)
+            if piece:
+                if piece.color != self.color:
+                    possible_moves.append(new_pos)
+                break
             possible_moves.append((x + i, y + i))
 
 
-
-
         return possible_moves
+

@@ -69,13 +69,11 @@ def draw_board():
         x, y = move
         pygame.draw.circle(screen, (0, 0, 0), (x * block_size + block_size // 2, y * block_size + block_size // 2), 8)
 
-
 def get_square(pos):
     x, y = pos
     col = x // block_size
     row = y // block_size
     return row, col
-
 
 running = True
 while running:
@@ -91,7 +89,7 @@ while running:
                     if piece.position == (col, row) and piece.color == current_turn:
                         selected_square = (row, col)
                         selected_piece = piece
-                        possible_moves = piece.get_possible_moves()
+                        possible_moves = piece.get_possible_moves(pieces)
                         break
             else:
                 if (col, row) in possible_moves:
