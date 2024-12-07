@@ -1,4 +1,8 @@
 import pygame
+import tkinter as tk
+from tkinter import messagebox
+
+
 from pawn import Pawn
 from queen import Queen
 from king import King
@@ -82,19 +86,76 @@ def get_square(pos):
     row = y // block_size
     return row, col
 
-
 def remove_captured_piece(row, col):
-
     for piece in pieces:
         if piece.position == (col, row):
             if piece.color == "white":
                 removed_white_pieces.append(piece)
             else:
                 removed_black_pieces.append(piece)
-
             pieces.remove(piece)
             break
 
+def is_in_check(king_color, pieces):
+    king_position = None
+    for piece in pieces:
+        if isinstance(piece, King) and piece.color == king_color:
+            king_position = piece.position
+            break
+
+    if not king_position:
+        return False
+
+    for piece in pieces:
+        if piece.color != king_color and king_position in piece.get_possible_moves(pieces):
+            return True
+
+    return False
+
+
+def is_checkmate(king_color, pieces):
+    if not is_in_check(king_color, pieces):
+        return False
+
+    for piece in pieces:
+        if piece.color == king_color:
+            valid_moves = get_possible_moves_with_check_prevention(piece, pieces)
+            if valid_moves:
+                return False
+
+    return True
+
+
+def get_possible_moves_with_check_prevention(piece, pieces):
+    possible_moves = piece.get_possible_moves(pieces)
+    valid_moves = []
+
+    for move in possible_moves:
+        original_position = piece.position
+        captured_piece = None
+        for p in pieces:
+            if p.position == move:
+                captured_piece = p
+                pieces.remove(p)
+                break
+
+        piece.position = move
+        if not is_in_check(piece.color, pieces):
+            valid_moves.append(move)
+
+        piece.position = original_position
+        if captured_piece:
+            pieces.append(captured_piece)
+
+    return valid_moves
+def show_winner(current):
+    root = tk.Tk()
+    root.withdraw()
+    if current == "white":
+        messagebox.showinfo("Koniec gry", f"Mat! Czarne wygrywają!")
+    else:
+        messagebox.showinfo("Koniec gry", f"Mat! Białe wygrywają!")
+    root.destroy()
 
 running = True
 while running:
@@ -110,21 +171,22 @@ while running:
                     if piece.position == (col, row) and piece.color == current_turn:
                         selected_square = (row, col)
                         selected_piece = piece
-                        possible_moves = piece.get_possible_moves(pieces)
+                        possible_moves = get_possible_moves_with_check_prevention(piece, pieces)
                         break
             else:
                 if (col, row) in possible_moves:
-
-                    for piece in pieces:
-                        if piece.position == (col, row) and piece.color != current_turn:
-                            remove_captured_piece(row, col)
-                            break
-
+                    remove_captured_piece(row, col)
                     selected_piece.position = (col, row)
                     if current_turn == "white":
                         current_turn = "black"
-                    elif current_turn == "black":
+                    else:
                         current_turn = "white"
+
+                    if is_checkmate(current_turn, pieces):
+                        draw_board()
+                        pygame.display.flip()
+                        show_winner(current_turn)
+
 
                 selected_piece = None
                 selected_square = None
