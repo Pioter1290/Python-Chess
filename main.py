@@ -1,8 +1,6 @@
 import pygame
 import tkinter as tk
 from tkinter import messagebox
-
-
 from pawn import Pawn
 from queen import Queen
 from king import King
@@ -54,7 +52,6 @@ pieces.append(Bishop("black", (2, 0), 'main/images/black_bishop.png'))
 pieces.append(Bishop("white", (5, 7), 'main/images/white_bishop.png'))
 pieces.append(Bishop("white", (2, 7), 'main/images/white_bishop.png'))
 
-# śledzenie czyj jest ruch:
 current_turn = "white"
 
 def draw_board():
@@ -64,7 +61,6 @@ def draw_board():
             color = white if (row + col) % 2 == 0 else green
             pygame.draw.rect(screen, color, pygame.Rect(col * block_size, row * block_size, block_size, block_size))
     pygame.draw.rect(screen, black, pygame.Rect(0, 0, 8 * block_size, 8 * block_size), 2)
-
 
     if selected_square:
         row, col = selected_square
@@ -112,7 +108,6 @@ def is_in_check(king_color, pieces):
 
     return False
 
-
 def is_checkmate(king_color, pieces):
     if not is_in_check(king_color, pieces):
         return False
@@ -124,7 +119,6 @@ def is_checkmate(king_color, pieces):
                 return False
 
     return True
-
 
 def get_possible_moves_with_check_prevention(piece, pieces):
     possible_moves = piece.get_possible_moves(pieces)
@@ -148,6 +142,7 @@ def get_possible_moves_with_check_prevention(piece, pieces):
             pieces.append(captured_piece)
 
     return valid_moves
+
 def show_winner(current):
     root = tk.Tk()
     root.withdraw()
@@ -156,6 +151,17 @@ def show_winner(current):
     else:
         messagebox.showinfo("Koniec gry", f"Mat! Białe wygrywają!")
     root.destroy()
+
+def change_pawn_to_queen(pawn):
+    global pieces
+    col, row = pawn.position
+    pieces.remove(pawn)
+    color = pawn.color
+    if(color == "white"):
+        new_queen = Queen(pawn.color, (col, row), f'main/images/white_queen.png')
+    else:
+        new_queen = Queen(pawn.color, (col, row), f'main/images/black_queen.png')
+    pieces.append(new_queen)
 
 running = True
 while running:
@@ -177,6 +183,11 @@ while running:
                 if (col, row) in possible_moves:
                     remove_captured_piece(row, col)
                     selected_piece.position = (col, row)
+
+                    if isinstance(selected_piece, Pawn):
+                        if (selected_piece.color == "white" and selected_piece.position[1] == 0) or (selected_piece.color == "black" and selected_piece.position[1] == 7):
+                            change_pawn_to_queen(selected_piece)
+
                     if current_turn == "white":
                         current_turn = "black"
                     else:
@@ -187,7 +198,6 @@ while running:
                         pygame.display.flip()
                         show_winner(current_turn)
 
-
                 selected_piece = None
                 selected_square = None
                 possible_moves = []
@@ -196,4 +206,3 @@ while running:
     pygame.display.flip()
 
 pygame.quit()
-
