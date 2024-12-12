@@ -54,12 +54,25 @@ pieces.append(Bishop("white", (2, 7), 'main/images/white_bishop.png'))
 
 current_turn = "white"
 
+
 def draw_board():
     screen.fill(light_grey)
+    font = pygame.font.SysFont(None, 36)
+    letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+    numbers = ['8', '7', '6', '5', '4', '3', '2', '1']
+
     for row in range(8):
         for col in range(8):
             color = white if (row + col) % 2 == 0 else green
             pygame.draw.rect(screen, color, pygame.Rect(col * block_size, row * block_size, block_size, block_size))
+
+            if col == 0:
+                label = font.render(numbers[row], True, black if color == white else white)
+                screen.blit(label, (col * block_size + 5, row * block_size + 5))
+            if row == 7:
+                label = font.render(letters[col], True, black if color == white else white)
+                screen.blit(label, (col * block_size + block_size - 15, row * block_size + block_size - 30))
+
     pygame.draw.rect(screen, black, pygame.Rect(0, 0, 8 * block_size, 8 * block_size), 2)
 
     if selected_square:
@@ -72,15 +85,19 @@ def draw_board():
     for move in possible_moves:
         x, y = move
         if current_turn == "black":
-            pygame.draw.circle(screen, (0, 0, 0), (x * block_size + block_size // 2, y * block_size + block_size // 2), 8)
+            pygame.draw.circle(screen, (0, 0, 0), (x * block_size + block_size // 2, y * block_size + block_size // 2),
+                               8)
         else:
-            pygame.draw.circle(screen, (128, 128, 128), (x * block_size + block_size // 2, y * block_size + block_size // 2), 8)
+            pygame.draw.circle(screen, (128, 128, 128),
+                               (x * block_size + block_size // 2, y * block_size + block_size // 2), 8)
+
 
 def get_square(pos):
     x, y = pos
     col = x // block_size
     row = y // block_size
     return row, col
+
 
 def remove_captured_piece(row, col):
     for piece in pieces:
@@ -91,6 +108,7 @@ def remove_captured_piece(row, col):
                 removed_black_pieces.append(piece)
             pieces.remove(piece)
             break
+
 
 def is_in_check(king_color, pieces):
     king_position = None
@@ -108,6 +126,7 @@ def is_in_check(king_color, pieces):
 
     return False
 
+
 def is_checkmate(king_color, pieces):
     if not is_in_check(king_color, pieces):
         return False
@@ -119,6 +138,7 @@ def is_checkmate(king_color, pieces):
                 return False
 
     return True
+
 
 def get_possible_moves_with_check_prevention(piece, pieces):
     possible_moves = piece.get_possible_moves(pieces)
@@ -143,6 +163,7 @@ def get_possible_moves_with_check_prevention(piece, pieces):
 
     return valid_moves
 
+
 def show_winner(current):
     root = tk.Tk()
     root.withdraw()
@@ -152,16 +173,18 @@ def show_winner(current):
         messagebox.showinfo("Koniec gry", f"Mat! Białe wygrywają!")
     root.destroy()
 
+
 def change_pawn_to_queen(pawn):
     global pieces
     col, row = pawn.position
     pieces.remove(pawn)
     color = pawn.color
-    if(color == "white"):
+    if (color == "white"):
         new_queen = Queen(pawn.color, (col, row), f'main/images/white_queen.png')
     else:
         new_queen = Queen(pawn.color, (col, row), f'main/images/black_queen.png')
     pieces.append(new_queen)
+
 
 running = True
 while running:
@@ -185,7 +208,8 @@ while running:
                     selected_piece.position = (col, row)
 
                     if isinstance(selected_piece, Pawn):
-                        if (selected_piece.color == "white" and selected_piece.position[1] == 0) or (selected_piece.color == "black" and selected_piece.position[1] == 7):
+                        if (selected_piece.color == "white" and selected_piece.position[1] == 0) or (
+                                selected_piece.color == "black" and selected_piece.position[1] == 7):
                             change_pawn_to_queen(selected_piece)
 
                     if current_turn == "white":
